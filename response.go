@@ -156,9 +156,14 @@ func decodeToDeleteIceBreakersResponse(res *http.Response) (*DeleteIceBreakersRe
 
 // GetUserProfileResponse defines instagram get user profile response.
 type GetUserProfileResponse struct {
-	ID         string `json:"id"`
-	Name       string `json:"name"`
-	ProfilePic string `json:"profile_pic"`
+	ID                   string `json:"id"`
+	Name                 string `json:"name"`
+	ProfilePic           string `json:"profile_pic"`
+	Username             string `json:"username"`
+	FollowerCount        int    `json:"follower_count"`
+	IsUserFollowBusiness bool   `json:"is_user_follow_business"`
+	IsBusinessFollowUser bool   `json:"is_business_follow_user"`
+	IsVerifiedUser       bool   `json:"is_verified_user"`
 }
 
 func decodeToGetUserProfileResponse(res *http.Response) (*GetUserProfileResponse, error) {
