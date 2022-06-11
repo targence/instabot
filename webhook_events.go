@@ -112,6 +112,24 @@ func (m *Messaging) GetStoryReplyEvent() *StoryReplyEvent {
 	return storyReplyEvent
 }
 
+type ReferralMessageEvent struct {
+	Sender    *Sender
+	Recipient *Recipient
+	Timestamp time.Time
+	Referral  *ReferralLink
+}
+
+func (m *Messaging) GetReferralEvent() *ReferralMessageEvent {
+	referralMessageEvent := &ReferralMessageEvent{
+		Sender:    m.Sender,
+		Recipient: m.Recipient,
+		Timestamp: time.Unix(m.Timestamp, 0).UTC(),
+		Referral:  m.Referral,
+	}
+
+	return referralMessageEvent
+}
+
 // TextMessageEvent defines flatten text message event.
 type TextMessageEvent struct {
 	Sender    *Sender
@@ -119,6 +137,7 @@ type TextMessageEvent struct {
 	Timestamp time.Time
 	MID       string
 	Text      string
+	Referral  *ReferralLink
 }
 
 // GetTextMessageEvent returns text message event.
@@ -130,11 +149,13 @@ func (m *Messaging) GetTextMessageEvent() *TextMessageEvent {
 		Timestamp: time.Unix(m.Timestamp, 0).UTC(),
 		MID:       m.Message.MID,
 		Text:      m.Message.Text,
+		Referral:  m.Message.Referral,
 	}
 
 	if m.Message != nil {
 		textMessageEvent.MID = m.Message.MID
 		textMessageEvent.Text = m.Message.Text
+		textMessageEvent.Referral = m.Message.Referral
 	}
 
 	return textMessageEvent

@@ -22,6 +22,7 @@ const (
 	WebhookEventTypeReaction     WebhookEventType = WebhookEventType("reaction")
 	WebhookEventTypeMessageSeen  WebhookEventType = WebhookEventType("message_seen")
 	WebhookEventTypePostBack     WebhookEventType = WebhookEventType("postback")
+	WebhookEventTypeReferral     WebhookEventType = WebhookEventType("referral")
 	WebhookEventTypeEcho         WebhookEventType = WebhookEventType("echo")
 	WebhookEventTypeDeleted      WebhookEventType = WebhookEventType("deleted")
 	WebhookEventTypeUnsupported  WebhookEventType = WebhookEventType("unsupported")
@@ -48,6 +49,13 @@ type AttachmentPayload struct {
 type Attachment struct {
 	Type    string            `json:"type"`
 	Payload AttachmentPayload `json:"payload"`
+}
+
+// Referral for PostBack
+type ReferralLink struct {
+	Ref    string `json:"ref"`
+	Source string `json:"source"`
+	Type   string `json:"type"`
 }
 
 // ReferralProduct defines fb/instagram shop product.
@@ -81,9 +89,10 @@ type WebhookQuickReply struct {
 
 // Postback defines postback.
 type Postback struct {
-	MID     string `json:"mid"`
-	Title   string `json:"title"`
-	Payload string `json:"payload"`
+	MID      string        `json:"mid"`
+	Title    string        `json:"title"`
+	Payload  string        `json:"payload"`
+	Referral *ReferralLink `json:"referral"`
 }
 
 // WebhookMessage defines different message event type details.
@@ -96,6 +105,7 @@ type WebhookMessage struct {
 	IsEcho        bool               `json:"is_echo"`
 	IsUnsupported bool               `json:"is_unsupported"`
 	IsDeleted     bool               `json:"is_deleted"`
+	Referral      *ReferralLink      `json:"referral"`
 }
 
 func (m *WebhookMessage) isQuickReply() bool {
@@ -173,7 +183,7 @@ type Messaging struct {
 	Message   *WebhookMessage `json:"message"`
 	Read      *Read           `json:"read"`
 	Reaction  *Reaction       `json:"reaction"`
-	Referral  *Referral       `json:"referral"`
+	Referral  *ReferralLink   `json:"referral"`
 	PostBack  *Postback       `json:"postback"`
 }
 
@@ -249,7 +259,10 @@ func (e *WebhookEvent) setType() {
 				event.Type = WebhookEventTypeReaction
 			case event.isPostBackEvent():
 				event.Type = WebhookEventTypePostBack
+			case event.isReferralEvent():
+				event.Type = WebhookEventTypeReferral
 			}
+
 		}
 	}
 }
